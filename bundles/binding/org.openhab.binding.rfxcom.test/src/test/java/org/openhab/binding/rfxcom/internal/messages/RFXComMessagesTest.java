@@ -8,62 +8,58 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.openhab.binding.rfxcom.internal.RFXComException;
-import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
 public class RFXComMessagesTest {
-    
-        @Test
-        public void checkNotImplementedPackets() throws Exception {
-            String errors = "";
 
-            // Currently there are a lot of not implemented messages,group together and throw a single error message listing all
-            for (PacketType p : PacketType.values()) {
-                if (p != PacketType.UNKNOWN) {
-                    try {
-                        RFXComMessageInterface intf = RFXComMessageFactory.getMessageInterface(p);
-                    } catch (Exception e) {
-                        errors += "\n\t" + e.getMessage();
-                    }
+    @Test
+    public void checkNotImplementedPackets() throws Exception {
+        String errors = "";
+
+        // Currently there are a lot of not implemented messages,group together and throw a single error message listing
+        // all
+        for (PacketType p : PacketType.values()) {
+            if (p != PacketType.UNKNOWN) {
+                try {
+                    RFXComMessage intf = RFXComMessageFactory.createMessage(p);
+                } catch (Exception e) {
+                    errors += "\n\t" + e.getMessage();
                 }
             }
-            if (errors.length() > 0) {
-                throw new Exception("Packet messages not implemented : " + errors);
-            }
         }
+        if (errors.length() > 0) {
+            throw new Exception("Packet messages not implemented : " + errors);
+        }
+    }
 
+    @Test
+    public void checkDecodeMessage() throws Exception {
+        String errors = "";
 
-        @Test
-        public void checkDecodeMessage() throws Exception {
-            String errors = "";
-            
-            for (PacketType p : PacketType.values()) {
-                if (p != PacketType.UNKNOWN) {
+        for (PacketType p : PacketType.values()) {
+            if (p != PacketType.UNKNOWN) {
+                try {
+                    RFXComMessage intf = RFXComMessageFactory.createMessage(p);
                     try {
-                        RFXComMessageInterface intf = RFXComMessageFactory.getMessageInterface(p);
-                        try {
-                            // This is a place where its easy to make mistakes in coding, and can result in errors, normally array bounds errors
-                            byte[] message = intf.decodeMessage();
-                            if (message[0] != (message.length-1)) {
-                                errors += "\n\t" + intf.getClass().getName() + " wrong packet length";
-                            }
-                            
-                        } catch (Throwable t) {
-                            errors += "\n\t" + intf.getClass().getName() + " " + t.getClass().getName() + " " + t.getMessage();
+                        // This is a place where its easy to make mistakes in coding, and can result in errors, normally
+                        // array bounds errors
+                        byte[] message = intf.decodeMessage();
+                        if (message[0] != (message.length - 1)) {
+                            errors += "\n\t" + intf.getClass().getName() + " wrong packet length";
                         }
-                    } catch (Exception e) {
-                        // already checked in checkNotImplementedPackets()
+
+                    } catch (Throwable t) {
+                        errors += "\n\t" + intf.getClass().getName() + " " + t.getClass().getName() + " "
+                                + t.getMessage();
                     }
+                } catch (Exception e) {
+                    // already checked in checkNotImplementedPackets()
                 }
             }
-            if (errors.length() > 0) {
-                throw new Exception("Errors in decodeMessage :" + errors);
-            }
         }
+        if (errors.length() > 0) {
+            throw new Exception("Errors in decodeMessage :" + errors);
+        }
+    }
 }
-
