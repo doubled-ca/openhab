@@ -8,4 +8,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Vendor: openHAB.org
 Require-Bundle: org.junit;bundle-version="4.8.1"
 Bundle-ClassPath: .
-Import-Package: org.openhab.core.library.items
+Import-Package: org.openhab.binding.rfxcom.internal.exceptions,
+ org.openhab.core.library.items
